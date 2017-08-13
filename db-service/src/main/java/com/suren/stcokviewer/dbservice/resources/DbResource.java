@@ -1,12 +1,10 @@
 package com.suren.stcokviewer.dbservice.resources;
 
+import com.suren.stcokviewer.dbservice.com.suren.stockviewer.dbservice.model.QuoteModel;
 import com.suren.stcokviewer.dbservice.entity.Quote;
 import com.suren.stcokviewer.dbservice.repository.QuotesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,10 +22,24 @@ public class DbResource {
     @GetMapping("/{userName}")
     public List<String> getQuotes(@PathVariable("userName") String userName)
     {
-       return quotesRepository.findByUserName(userName)
-                .stream()
-                .map(quote -> quote.getQuote())
-                .collect(Collectors.toList());
+        return getQuotesByUserName(userName);
 
+    }
+
+    private List<String> getQuotesByUserName(@PathVariable("userName") String userName) {
+        return quotesRepository.findByUserName(userName)
+                 .stream()
+                 .map(quote -> quote.getQuote())
+                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("/add")
+    public List<String> addQuotes(@RequestBody QuoteModel quote)
+    {
+        quote.getQuotename().stream().forEach(q ->{
+            quotesRepository.save(new Quote(quote.getUsername(),q));
+        });
+
+       return getQuotesByUserName(quote.getUsername());
     }
 }

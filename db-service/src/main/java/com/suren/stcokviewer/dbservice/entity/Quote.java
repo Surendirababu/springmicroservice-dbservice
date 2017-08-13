@@ -26,6 +26,11 @@ public class Quote {
         return id;
     }
 
+    public Quote(String userName, String quote) {
+        this.userName = userName;
+        this.quote = quote;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
