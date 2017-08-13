@@ -20,26 +20,32 @@ public class DbResource {
     private QuotesRepository quotesRepository;
 
     @GetMapping("/{userName}")
-    public List<String> getQuotes(@PathVariable("userName") String userName)
-    {
+    public List<String> getQuotes(@PathVariable("userName") String userName) {
         return getQuotesByUserName(userName);
 
     }
 
     private List<String> getQuotesByUserName(@PathVariable("userName") String userName) {
         return quotesRepository.findByUserName(userName)
-                 .stream()
-                 .map(quote -> quote.getQuote())
-                 .collect(Collectors.toList());
+                .stream()
+                .map(quote -> quote.getQuote())
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/add")
-    public List<String> addQuotes(@RequestBody QuoteModel quote)
-    {
-        quote.getQuotename().stream().forEach(q ->{
-            quotesRepository.save(new Quote(quote.getUsername(),q));
+    public List<String> addQuotes(@RequestBody QuoteModel quote) {
+        quote.getQuotename().stream().forEach(q -> {
+            quotesRepository.save(new Quote(quote.getUsername(), q));
         });
 
-       return getQuotesByUserName(quote.getUsername());
+        return getQuotesByUserName(quote.getUsername());
+    }
+
+    @DeleteMapping("/delete/{userName}")
+    public List<String> deleteQuotesForUserName(@PathVariable("userName") String userName) {
+
+        quotesRepository.findByUserName(userName).stream().forEach(quote -> quotesRepository.delete(quote));
+        return getQuotesByUserName(userName);
+
     }
 }
